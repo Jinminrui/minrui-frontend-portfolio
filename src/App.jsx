@@ -5,7 +5,7 @@ const profile = {
   englishName: 'Minrui Jin',
   role: '高级前端开发工程师',
   summary:
-    '具备 6 年 Web / Hybrid / 小程序前端经验，长期负责复杂业务系统、多端交付与性能优化，能够在业务快速迭代中兼顾体验、工程质量与交付效率，并持续探索 AI 辅助研发的实际落地。',
+    '具备 6 年 Web / Hybrid / 小程序前端经验，长期负责复杂业务系统、多端交付与性能优化，能够在业务快速迭代中兼顾体验、工程质量与交付效率，并将 AI 工具实际应用到需求拆解、方案评估、代码重构与问题排查流程中，持续提升研发效率。',
   location: '南京',
   phone: '173 1497 6003',
   email: '969172689@qq.com',
@@ -14,8 +14,8 @@ const profile = {
 const metrics = [
   { label: '前端开发经验', value: '6 Years' },
   { label: '核心交付场景', value: 'Web / Hybrid / 小程序' },
-  { label: '性能优化结果', value: '页面速度 +50%' },
-  { label: '包体优化结果', value: '累计压缩 388K' },
+  { label: '业务交付特点', value: '复杂业务 / 多端协同' },
+  { label: 'AI 协作研发', value: '拆解 / 重构 / 排障' },
 ];
 
 const capabilityGroups = [
@@ -32,8 +32,8 @@ const capabilityGroups = [
     items: ['接口前置', '按需注入', '数据补偿', '复杂表单', '高复用组件封装'],
   },
   {
-    title: 'AI 辅助研发',
-    items: ['Codex', 'Claude Code', '需求拆解', '重构提效', '排障辅助'],
+    title: 'AI 协作研发',
+    items: ['Codex', 'Claude Code', '需求拆解', '方案评估', '重构提效', '排障辅助'],
   },
 ];
 
@@ -43,13 +43,14 @@ const highlights = [
     title: '青云聚信',
     subtitle: '北京三快在线科技有限公司 / 前端开发工程师',
     impact:
-      '围绕商家履约、商品管理、广告营销、消息触达等核心场景，持续负责 APP 与 PC 端关键模块建设，在复杂业务迭代中兼顾交付效率、体验一致性与可维护性。',
+      '围绕商家履约、商品管理、广告营销、消息触达等核心场景，持续负责 APP 与 PC 端关键模块建设，在复杂业务迭代中兼顾交付效率、体验一致性与可维护性，并将 AI 工具引入日常研发流程以辅助方案分析、重构与排障。',
     bullets: [
       '从 0 到 1 搭建青云 PC 商品管理能力，落地主档、门店商品、任务中心等核心模块，支撑业务系统化运营。',
       '基于 Redux Toolkit 组织页面状态与数据流，沉淀树形分类、多图上传、文件上传等高复用组件，降低后续同类需求开发成本。',
-      '针对订单详情页实施接口前置、数据补偿与按需注入等优化方案，页面打开速度整体提升 50%。',
+      '针对订单详情页实施接口前置、数据补偿与按需注入等优化方案，持续改善页面打开体验与数据加载效率。',
+      '在需求理解、技术方案评估、代码重构与疑难问题排查中结合 Codex、Claude Code 等 AI 工具，缩短分析路径并提升复杂页面迭代效率。',
     ],
-    stack: 'React / Redux Toolkit / 多端协同 / Responsive Design',
+    stack: 'React / Redux Toolkit / 多端协同 / Responsive Design / AI 协作开发',
   },
   {
     year: '2025',
@@ -155,7 +156,7 @@ function App() {
         >
           <div className="hero-card-top">
             <span className="hero-card-label">Current Focus</span>
-            <p>复杂业务交付 / 性能优化 / 工程效率</p>
+            <p>复杂业务交付 / 性能优化 / AI 协作研发</p>
           </div>
 
           <dl className="identity-grid">
@@ -178,7 +179,7 @@ function App() {
           </dl>
 
           <p className="hero-card-note">
-            当前任职于美团，持续探索 Codex、Claude Code 等 AI 工具在需求拆解、重构提效与问题排查中的实际价值。
+            当前任职于美团，持续探索 Codex、Claude Code 等 AI 工具在需求拆解、方案评估、重构提效与问题排查中的实际价值，并关注其在前端研发流程中的可复用实践。
           </p>
         </motion.aside>
       </header>
@@ -253,7 +254,7 @@ function App() {
           <div className="contact-card">
             <div>
               <p className="contact-lead">
-                如果你正在寻找一位能独立承担复杂业务、多端交付与性能优化工作的前端工程师，欢迎和我聊聊。
+                如果你正在寻找一位能独立承担复杂业务、多端交付、性能优化，并能将 AI 工具真正用于研发提效的前端工程师，欢迎和我聊聊。
               </p>
               <p className="contact-meta">
                 Email: <a href={`mailto:${profile.email}`}>{profile.email}</a>
