@@ -1,5 +1,8 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const profile = {
   name: '金敏睿',
@@ -13,11 +16,25 @@ const profile = {
     '我做了 6 年前端，主要在 Web、Hybrid、小程序和复杂后台系统里解决业务问题。最近重点在做 AISDLC 相关建设：把 AI 接入需求理解、知识沉淀、代码审查和问题恢复，让它不只是写代码，而是真的参与研发流程。',
 };
 
-const quickFacts = [
+const heroMetrics = [
   ['6 年', '前端开发'],
-  ['React / 小程序 / Hybrid', '主要技术场景'],
   ['美团 / 小米', '工作经历'],
   ['AISDLC', '正在建设的方向'],
+  ['50%', '订单详情页打开速度提升'],
+];
+
+const heroKeywords = ['AISDLC', 'Agent', 'MCP', 'Frontend', 'Review'];
+
+const heroLines = [
+  { className: 'hero-line hero-line-one' },
+  { className: 'hero-line hero-line-two' },
+  { className: 'hero-line hero-line-three' },
+];
+
+const contactLinks = [
+  ['Email', profile.email, `mailto:${profile.email}`],
+  ['Phone', profile.phone, `tel:${profile.phone}`],
+  ['GitHub', 'github.com/Jinminrui', profile.github],
 ];
 
 const workflowSteps = [
@@ -129,13 +146,6 @@ const timeline = [
   ['2016 - 2020', '南京信息工程大学 · 计算机科学与技术', '本科，CET-6，具备良好的英文技术资料阅读能力。'],
 ];
 
-const sectionMotion = {
-  initial: { opacity: 0, y: 18 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.18 },
-  transition: { duration: 0.55, ease: 'easeOut' },
-};
-
 function SectionTitle({ eyebrow, title, note }) {
   return (
     <div className="section-title">
@@ -148,9 +158,222 @@ function SectionTitle({ eyebrow, title, note }) {
 
 function App() {
   const [activeStep, setActiveStep] = useState(workflowSteps[0]);
+  const shellRef = useRef(null);
+  const heroRef = useRef(null);
+  const heroCopyRef = useRef(null);
+  const heroVisualRef = useRef(null);
+  const heroMetricsRef = useRef(null);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    const hero = heroRef.current;
+    const heroCopy = heroCopyRef.current;
+    const heroVisual = heroVisualRef.current;
+    const heroMetrics = heroMetricsRef.current;
+
+    if (!shell || !hero || !heroCopy || !heroVisual || !heroMetrics) {
+      return undefined;
+    }
+
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isReducedMotion = reduceMotionQuery.matches;
+
+    const ctx = gsap.context(() => {
+      const heroItems = heroCopy.querySelectorAll('.eyebrow, h1 span, .hero-role, .hero-lead, .hero-actions');
+      const visualItems = heroVisual.querySelectorAll('.hero-line, .hero-keyword, .hero-orbit, .hero-scan');
+      const metricItems = heroMetrics.querySelectorAll('article');
+
+      gsap.set(heroItems, { autoAlpha: 0, y: isReducedMotion ? 0 : 28 });
+      gsap.set(visualItems, { autoAlpha: 0, y: isReducedMotion ? 0 : 18 });
+      gsap.set(metricItems, { autoAlpha: 0, y: isReducedMotion ? 0 : 18 });
+
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      intro
+        .to(visualItems, {
+          autoAlpha: 1,
+          y: 0,
+          duration: isReducedMotion ? 0.01 : 0.72,
+          stagger: isReducedMotion ? 0 : 0.05,
+        })
+        .to(
+          heroItems,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: isReducedMotion ? 0.01 : 0.82,
+            stagger: isReducedMotion ? 0 : 0.08,
+          },
+          isReducedMotion ? 0 : '-=0.42',
+        )
+        .to(
+          metricItems,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: isReducedMotion ? 0.01 : 0.5,
+            stagger: isReducedMotion ? 0 : 0.06,
+          },
+          isReducedMotion ? 0 : '-=0.24',
+        );
+
+      const animatedSections = gsap.utils.toArray('.animate-section');
+
+      animatedSections.forEach((section) => {
+        if (section === hero) {
+          return;
+        }
+
+        const sectionTargets = section.querySelectorAll(
+          '.section-title, .workflow-rail button, .workflow-detail, .evidence-list article, .case-card, .skills-panel, .skill-tags span, .timeline article, .contact-section > *, .contact-links a',
+        );
+
+        gsap.set(sectionTargets, { autoAlpha: 0, y: isReducedMotion ? 0 : 24 });
+
+        gsap.to(sectionTargets, {
+          autoAlpha: 1,
+          y: 0,
+          duration: isReducedMotion ? 0.01 : 0.62,
+          stagger: isReducedMotion ? 0 : 0.07,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 78%',
+            once: true,
+          },
+        });
+      });
+
+      if (!isReducedMotion) {
+        gsap.to(hero.querySelector('.hero-grid-layer'), {
+          backgroundPosition: '96px 96px',
+          duration: 22,
+          repeat: -1,
+          ease: 'none',
+        });
+
+        gsap.to(hero.querySelectorAll('.hero-keyword'), {
+          yPercent: (index) => (index % 2 === 0 ? 12 : -10),
+          xPercent: (index) => (index % 2 === 0 ? -8 : 7),
+          duration: 7,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          stagger: 0.35,
+        });
+
+        gsap.to(hero.querySelectorAll('.hero-line'), {
+          xPercent: (index) => (index === 1 ? -10 : 12),
+          duration: 9,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          stagger: 0.6,
+        });
+
+        gsap.to(heroVisual, {
+          y: 42,
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.7,
+          },
+        });
+      }
+    }, shell);
+
+    const canUsePointerMotion = !isReducedMotion && window.matchMedia('(pointer: fine)').matches;
+
+    const handlePointerMove = (event) => {
+      if (!canUsePointerMotion) {
+        return;
+      }
+
+      const rect = hero.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+      gsap.to(hero, {
+        '--hero-pointer-x': `${50 + x * 18}%`,
+        '--hero-pointer-y': `${50 + y * 16}%`,
+        duration: 0.45,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+
+      gsap.to(heroVisual.querySelectorAll('.hero-keyword, .hero-orbit'), {
+        x: (index) => x * (index % 2 === 0 ? 18 : -14),
+        y: (index) => y * (index % 2 === 0 ? 12 : -10),
+        duration: 0.55,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    };
+
+    const handlePointerLeave = () => {
+      if (!canUsePointerMotion) {
+        return;
+      }
+
+      gsap.to(hero, {
+        '--hero-pointer-x': '50%',
+        '--hero-pointer-y': '50%',
+        duration: 0.6,
+        ease: 'power3.out',
+      });
+
+      gsap.to(heroVisual.querySelectorAll('.hero-keyword, .hero-orbit'), {
+        x: 0,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+      });
+    };
+
+    hero.addEventListener('pointermove', handlePointerMove);
+    hero.addEventListener('pointerleave', handlePointerLeave);
+
+    return () => {
+      hero.removeEventListener('pointermove', handlePointerMove);
+      hero.removeEventListener('pointerleave', handlePointerLeave);
+      ctx.revert();
+    };
+  }, []);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+
+    if (!shell) {
+      return undefined;
+    }
+
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (reduceMotionQuery.matches) {
+      return undefined;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '.workflow-detail > *',
+        { autoAlpha: 0, y: 12 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.36,
+          stagger: 0.04,
+          ease: 'power2.out',
+        },
+      );
+    }, shell);
+
+    return () => {
+      ctx.revert();
+    };
+  }, [activeStep]);
 
   return (
-    <div className="site-shell">
+    <div className="site-shell" ref={shellRef}>
       <header className="topbar">
         <a href="#top" className="brand">
           <strong>金敏睿</strong>
@@ -158,86 +381,66 @@ function App() {
         </a>
         <nav aria-label="页面导航">
           <a href="#workflow">AISDLC</a>
-          <a href="#evidence">我的经验</a>
+          <a href="#evidence">能力证据</a>
           <a href="#cases">项目案例</a>
-          <a href={`mailto:${profile.email}`}>联系</a>
+          <a href="#background">经历</a>
+          <a href="#contact">联系</a>
         </nav>
       </header>
 
       <main id="top">
-        <section className="hero">
-          <motion.div
-            className="hero-copy"
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: 'easeOut' }}
-          >
+        <section className="hero animate-section" ref={heroRef}>
+          <div className="hero-visual" ref={heroVisualRef} aria-hidden="true">
+            <span className="hero-grid-layer" />
+            <span className="hero-scan" />
+            <span className="hero-orbit hero-orbit-one" />
+            <span className="hero-orbit hero-orbit-two" />
+            {heroLines.map((line) => (
+              <span className={line.className} key={line.className} />
+            ))}
+            {heroKeywords.map((keyword, index) => (
+              <span className={`hero-keyword hero-keyword-${index + 1}`} key={keyword}>
+                {keyword}
+              </span>
+            ))}
+          </div>
+
+          <div className="hero-copy" ref={heroCopyRef}>
             <p className="eyebrow">Frontend Engineer · AISDLC</p>
-            <h1>{profile.role}</h1>
-            <p className="hero-lead">{profile.summary}</p>
+            <h1>
+              <span>{profile.name}</span>
+              <span>{profile.englishName}</span>
+            </h1>
+            <p className="hero-role">{profile.role}</p>
+            <p className="hero-lead">把 AI 接入需求理解、工程实现、代码审查和知识沉淀，让它真正参与研发流程。</p>
             <div className="hero-actions">
-              <a href={`mailto:${profile.email}`} className="button button-primary">
+              <a href="#cases" className="button button-primary">
+                查看项目
+              </a>
+              <a href="#contact" className="button button-secondary">
                 联系我
               </a>
-              <a href={profile.github} target="_blank" rel="noreferrer" className="button button-secondary">
-                查看 GitHub
-              </a>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.aside
-            className="candidate-panel"
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.12, ease: 'easeOut' }}
-          >
-            <div className="candidate-head">
-              <div className="monogram">J</div>
-              <div>
-                <h2>{profile.name}</h2>
-                <p>{profile.englishName}</p>
-              </div>
-            </div>
-            <dl className="contact-grid">
-              <div>
-                <dt>Base</dt>
-                <dd>{profile.location}</dd>
-              </div>
-              <div>
-                <dt>Phone</dt>
-                <dd>{profile.phone}</dd>
-              </div>
-              <div>
-                <dt>Email</dt>
-                <dd>
-                  <a href={`mailto:${profile.email}`}>{profile.email}</a>
-                </dd>
-              </div>
-              <div>
-                <dt>Target</dt>
-                <dd>{profile.role}</dd>
-              </div>
-            </dl>
-          </motion.aside>
+          <div className="proof-strip" ref={heroMetricsRef} aria-label="核心事实">
+            {heroMetrics.map(([value, label]) => (
+              <article key={label}>
+                <strong>{value}</strong>
+                <span>{label}</span>
+              </article>
+            ))}
+          </div>
         </section>
 
-        <motion.section className="quick-facts" {...sectionMotion} aria-label="快速信息">
-          {quickFacts.map(([value, label]) => (
-            <article key={label}>
-              <strong>{value}</strong>
-              <span>{label}</span>
-            </article>
-          ))}
-        </motion.section>
-
-        <motion.section className="section workflow-section" id="workflow" {...sectionMotion}>
+        <section className="section workflow-section narrative-panel animate-section" id="workflow">
           <SectionTitle
             eyebrow="AI workflow"
             title="我关注的是前端 AISDLC，不只是 AI 写代码"
             note="重点是把 AI 放进需求、知识库、Review 和排障流程里，让它能持续理解项目上下文。"
           />
           <div className="workflow-layout">
-            <div className="workflow-tabs" role="tablist" aria-label="AI 工作流步骤">
+            <div className="workflow-rail" role="tablist" aria-label="AI 工作流步骤">
               {workflowSteps.map((step, index) => (
                 <button
                   key={step.id}
@@ -248,12 +451,12 @@ function App() {
                   aria-selected={activeStep.id === step.id}
                 >
                   <span>{String(index + 1).padStart(2, '0')}</span>
-                  {step.label}
+                  <strong>{step.label}</strong>
                 </button>
               ))}
             </div>
             <div className="workflow-detail">
-              <p className="detail-label">当前步骤</p>
+              <p className="detail-label">当前阶段</p>
               <h3>{activeStep.title}</h3>
               <p>{activeStep.body}</p>
               <div>
@@ -262,9 +465,9 @@ function App() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section className="section evidence-section" id="evidence" {...sectionMotion}>
+        <section className="section evidence-section evidence-wall animate-section" id="evidence">
           <SectionTitle
             eyebrow="Evidence"
             title="我能帮团队解决哪些前端问题"
@@ -281,9 +484,9 @@ function App() {
               </article>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section className="section cases-section" id="cases" {...sectionMotion}>
+        <section className="section cases-section case-showcase animate-section" id="cases">
           <SectionTitle
             eyebrow="Selected cases"
             title="几个能代表我工作方式的项目"
@@ -314,41 +517,59 @@ function App() {
               </article>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section className="section skills-section" {...sectionMotion}>
-          <SectionTitle eyebrow="Toolbox" title="这些是我平时真正会用到的东西" />
-          <div className="skill-tags">
-            {skills.map((skill) => (
-              <span key={skill}>{skill}</span>
-            ))}
+        <section className="section background-section animate-section" id="background">
+          <SectionTitle
+            eyebrow="Background"
+            title="技术栈和经历，支撑我把想法落到真实业务里"
+            note="技能不是孤立标签，它们和业务交付、性能优化、AI 工程流程建设一起发挥作用。"
+          />
+          <div className="background-grid">
+            <div className="skills-panel">
+              <h3>Toolbox</h3>
+              <div className="skill-tags">
+                {skills.map((skill) => (
+                  <span key={skill}>{skill}</span>
+                ))}
+              </div>
+            </div>
+            <div className="timeline-panel">
+              <h3>Experience</h3>
+              <div className="timeline">
+                {timeline.map(([time, title, body]) => (
+                  <article key={time}>
+                    <time>{time}</time>
+                    <div>
+                      <h4>{title}</h4>
+                      <p>{body}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section className="section timeline-section" {...sectionMotion}>
-          <SectionTitle eyebrow="Experience" title="我在哪里做过这些事" />
-          <div className="timeline">
-            {timeline.map(([time, title, body]) => (
-              <article key={time}>
-                <time>{time}</time>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section className="contact-section" {...sectionMotion}>
+        <section className="contact-section animate-section" id="contact">
           <div>
             <p className="eyebrow">Open to frontend opportunities</p>
             <h2>如果你在找一位能做复杂业务，也在认真建设 AI 参与研发流程的前端工程师，我们可以聊聊。</h2>
           </div>
-          <a href={`mailto:${profile.email}`} className="button button-primary">
-            {profile.email}
-          </a>
-        </motion.section>
+          <div className="contact-links" aria-label="联系方式">
+            {contactLinks.map(([label, value, href]) => (
+              <a
+                href={href}
+                key={label}
+                target={label === 'GitHub' ? '_blank' : undefined}
+                rel={label === 'GitHub' ? 'noreferrer' : undefined}
+              >
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </a>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );
